@@ -1,0 +1,116 @@
+#Elasticsearchh create sensor data mapping, bulkupload, timerange search
+#Create sensor-data Mapping
+curl -X PUT "https://localhost:9200/sensor-data"   --cacert config/certs/http_ca.crt   -u elastic:$ES_PASSWORD   -H "Content-Type: application/json"   -d '{
+    "mappings": {
+      "properties": {
+        "@timestamp": { "type": "date" },
+        "eth": {
+          "properties": {
+            "src_mac": { "type": "keyword" },
+            "dst_mac": { "type": "keyword" }
+          }
+        },
+        "ip": {
+          "properties": {
+            "src_ip": { "type": "ip" },
+            "dst_ip": { "type": "ip" },
+            "protocol": { "type": "integer" },
+            "ttl": { "type": "integer" },
+            "packet_length": { "type": "integer" }
+          }
+        },
+        "udp": {
+          "properties": {
+            "src_port": { "type": "integer" },
+            "dst_port": { "type": "integer" }
+          }
+        },
+        "sensor_data": {
+          "properties": {
+            "temperature": { "type": "float" },
+            "alarm_triggered": { "type": "boolean" }
+          }
+        }
+      }
+    }
+  }'
+
+
+curl -X PUT "https://localhost:9200/sensor-data" \
+  --cacert config/certs/http_ca.crt \
+  -u elastic:$ES_PASSWORD \
+  -H "Content-Type: application/json" \
+  -d '{
+    "mappings": {
+      "properties": {
+        "@timestamp": { "type": "date" },
+        "eth": {
+          "properties": {
+            "src_mac": { "type": "keyword" },
+            "dst_mac": { "type": "keyword" }
+          }
+        },
+        "ip": {
+          "properties": {
+            "src_ip": { "type": "ip" },
+            "dst_ip": { "type": "ip" },
+            "protocol": { "type": "integer" },
+            "ttl": { "type": "integer" },
+            "packet_length": { "type": "integer" }
+          }
+        },
+        "udp": {
+          "properties": {
+            "src_port": { "type": "integer" },
+            "dst_port": { "type": "integer" }
+          }
+        },
+        "sensor_data": {
+          "properties": {
+            "temperature": { "type": "float" },
+            "alarm_triggered": { "type": "boolean" }
+          }
+        }
+      }
+    }
+  }'
+  
+  
+# upload data from bulk file
+curl -X POST "https://localhost:9200/_bulk"   --cacert config/certs/http_ca.crt   -u elastic:$ES_PASSWORD   -H "Content-Type: application/json"   \
+	--data-binary--data-binary @/home/raju/Downloads/bulk.json
+
+######build.json content##############
+{"index": {"_index": "sensor-data"}}
+{"@timestamp": "2025-02-14T14:03:38.056230Z", "eth": {"src_mac": "00:1a:2b:3c:4d:5e", "dst_mac": "ff:ff:ff:ff:ff:ff"}, "ip": {"src_ip": "192.168.1.100", "dst_ip": "192.168.1.1", "protocol": 17, "ttl": 64, "packet_length": 53}, "udp": {"src_port": 8080, "dst_port": 8080}, "sensor_data": {"temperature": 50.0, "alarm_triggered": false}}
+{"index": {"_index": "sensor-data"}}
+{"@timestamp": "2025-02-14T14:04:08.056230Z", "eth": {"src_mac": "00:1a:2b:3c:4d:5e", "dst_mac": "ff:ff:ff:ff:ff:ff"}, "ip": {"src_ip": "192.168.1.100", "dst_ip": "192.168.1.1", "protocol": 17, "ttl": 64, "packet_length": 79}, "udp": {"src_port": 8080, "dst_port": 8080}, "sensor_data": {"temperature": 50.0, "alarm_triggered": true}}
+{"index": {"_index": "sensor-data"}}
+{"@timestamp": "2025-02-14T14:04:38.056230Z", "eth": {"src_mac": "00:1a:2b:3c:4d:5e", "dst_mac": "ff:ff:ff:ff:ff:ff"}, "ip": {"src_ip": "192.168.1.100", "dst_ip": "192.168.1.1", "protocol": 17, "ttl": 64, "packet_length": 53}, "udp": {"src_port": 8080, "dst_port": 8080}, "sensor_data": {"temperature": 50.5, "alarm_triggered": false}}
+{"index": {"_index": "sensor-data"}}
+{"@timestamp": "2025-02-14T14:05:08.056230Z", "eth": {"src_mac": "00:1a:2b:3c:4d:5e", "dst_mac": "ff:ff:ff:ff:ff:ff"}, "ip": {"src_ip": "192.168.1.100", "dst_ip": "192.168.1.1", "protocol": 17, "ttl": 64, "packet_length": 53}, "udp": {"src_port": 8080, "dst_port": 8080}, "sensor_data": {"temperature": 51.0, "alarm_triggered": false}}
+{"index": {"_index": "sensor-data"}}
+{"@timestamp": "2025-02-14T14:05:38.056230Z", "eth": {"src_mac": "00:1a:2b:3c:4d:5e", "dst_mac": "ff:ff:ff:ff:ff:ff"}, "ip": {"src_ip": "192.168.1.100", "dst_ip": "192.168.1.1", "protocol": 17, "ttl": 64, "packet_length": 53}, "udp": {"src_port": 8080, "dst_port": 8080}, "sensor_data": {"temperature": 51.5, "alarm_triggered": false}}
+{"index": {"_index": "sensor-data"}}
+{"@timestamp": "2025-02-14T14:06:08.056230Z", "eth": {"src_mac": "00:1a:2b:3c:4d:5e", "dst_mac": "ff:ff:ff:ff:ff:ff"}, "ip": {"src_ip": "192.168.1.100", "dst_ip": "192.168.1.1", "protocol": 17, "ttl": 64, "packet_length": 53}, "udp": {"src_port": 8080, "dst_port": 8080}, "sensor_data": {"temperature": 52.0, "alarm_triggered": false}}
+{"index": {"_index": "sensor-data"}}
+{"@timestamp": "2025-02-14T14:06:38.056230Z", "eth": {"src_mac": "00:1a:2b:3c:4d:5e", "dst_mac": "ff:ff:ff:ff:ff:ff"}, "ip": {"src_ip": "192.168.1.100", "dst_ip": "192.168.1.1", "protocol": 17, "ttl": 64, "packet_length": 79}, "udp": {"src_port": 8080, "dst_port": 8080}, "sensor_data": {"temperature": 55.0, "alarm_triggered": true}}  
+######build.json content##############
+
+#search data by time range.
+curl -X GET "https://localhost:9200/sensor-data/_search"     --cacert config/certs/http_ca.crt     -u elastic:$ES_PASSWORD     -H "Content-Type: application/json"     -d '{
+      "query": {
+        "range": {
+          "@timestamp": {
+            "gte": "2025-02-14T14:04:37Z",
+            "lte": "2025-02-14T14:05:37Z"
+          }
+        }
+      }
+    }'
+	
+#search complete data.
+
+curl -X GET "https://localhost:9200/sensor-data/_search?pretty"   --cacert config/certs/http_ca.crt   -u elastic:$ES_PASSWORD 
+
+	
